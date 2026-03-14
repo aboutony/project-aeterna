@@ -1,0 +1,30 @@
+name: project_aeterna
+description: "Project Aeterna — Sovereign Digital Vault for the GCC Elite"
+publish_to: 'none'
+version: 0.1.0+1
+
+environment:
+  sdk: ^3.11.1
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+
+  # Database — Local-First Embedded Replica
+  sqflite: ^2.4.2
+  path: ^1.9.1
+
+  # Typography — Google Fonts for the Digital Sanctum
+  google_fonts: ^6.2.1
+
+  # Utilities
+  uuid: ^4.5.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
