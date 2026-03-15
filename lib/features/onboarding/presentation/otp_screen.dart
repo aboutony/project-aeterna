@@ -425,7 +425,8 @@ class _OtpScreenState extends State<OtpScreen>
                 maxLength: 1,
                 style: SanctumTypography.monoLarge.copyWith(
                   color: _accentColor,
-                  fontSize: 22,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
                 ),
                 decoration: const InputDecoration(
                   counterText: '',

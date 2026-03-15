@@ -194,7 +194,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                         elevation: 0,
                       ),
                       child: Text(
-                        isRtl ? 'ادخل المقدس' : 'ENTER THE SANCTUM',
+                        isRtl ? 'ادخل العرين' : 'ENTER THE SANCTUM',
                         style: SanctumTypography.buttonText.copyWith(
                           letterSpacing: 3.0,
                           fontWeight: FontWeight.w700,

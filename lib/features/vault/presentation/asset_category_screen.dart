@@ -145,6 +145,7 @@ class _AssetCategoryScreenState extends State<AssetCategoryScreen> {
                     itemBuilder: (context, index) {
                       final asset = assets[index];
                       return GestureDetector(
+                        behavior: HitTestBehavior.opaque,
                         onTap: () => Navigator.pushNamed(context, '/asset-details', arguments: asset),
                         child: _buildAssetTile(
                           asset: asset,
