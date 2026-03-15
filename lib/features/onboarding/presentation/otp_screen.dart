@@ -401,8 +401,8 @@ class _OtpScreenState extends State<OtpScreen>
           mainAxisAlignment: MainAxisAlignment.center,
           children: List.generate(6, (i) {
             return Container(
-              width: 44,
-              height: 56,
+              width: 40,
+              height: 45,
               margin: EdgeInsets.only(
                 left: i > 0 ? 8 : 0,
                 right: i == 2 ? 8 : 0, // Extra spacing after 3rd digit
@@ -423,10 +423,10 @@ class _OtpScreenState extends State<OtpScreen>
                 textAlign: TextAlign.center,
                 keyboardType: TextInputType.number,
                 maxLength: 1,
-                style: SanctumTypography.monoLarge.copyWith(
-                  color: _accentColor,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.normal,
+                  color: Colors.white,
                 ),
                 decoration: const InputDecoration(
                   counterText: '',

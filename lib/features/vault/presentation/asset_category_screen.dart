@@ -144,17 +144,23 @@ class _AssetCategoryScreenState extends State<AssetCategoryScreen> {
                     separatorBuilder: (_, __) => const SizedBox(height: 10),
                     itemBuilder: (context, index) {
                       final asset = assets[index];
-                      return GestureDetector(
-                        behavior: HitTestBehavior.opaque,
-                        onTap: () => Navigator.pushNamed(context, '/asset-details', arguments: asset),
-                        child: _buildAssetTile(
-                          asset: asset,
-                          isDark: isDark,
-                          isRtl: isRtl,
-                          glassFill: glassFill,
-                          glassBorder: glassBorder,
-                          textPrimary: textPrimary,
-                          textTertiary: textTertiary,
+                      return Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(14),
+                          onTap: () {
+                            debugPrint("Asset Clicked: ${asset['id']}");
+                            Navigator.pushNamed(context, '/asset-details', arguments: asset);
+                          },
+                          child: _buildAssetTile(
+                            asset: asset,
+                            isDark: isDark,
+                            isRtl: isRtl,
+                            glassFill: glassFill,
+                            glassBorder: glassBorder,
+                            textPrimary: textPrimary,
+                            textTertiary: textTertiary,
+                          ),
                         ),
                       );
                     },
