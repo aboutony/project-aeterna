@@ -16,7 +16,7 @@ dependencies:
   path: ^1.9.1
 
   # Typography — Google Fonts for the Digital Sanctum
-  google_fonts: ^6.2.1
+  google_fonts: ^6.3.3
 
   # Utilities
   uuid: ^4.5.1

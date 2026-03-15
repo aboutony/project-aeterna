@@ -1,20 +1,57 @@
-// This is a basic Flutter widget test.
+// Project Aeterna — Widget & Smoke Tests
 //
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
+// Validates:
+//   1. WelcomeScreen renders correctly (Auth Gate entry point)
+//   2. SanctumTheme provides valid dark/light themes
+//   3. SanctumColors palette constants are defined
 
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:project_aeterna/main.dart';
+import 'package:project_aeterna/core/theme/sanctum_theme.dart';
+import 'package:project_aeterna/core/theme/sanctum_colors.dart';
+import 'package:project_aeterna/features/onboarding/presentation/welcome_screen.dart';
 
 void main() {
-  testWidgets('Aeterna app starts with splash screen', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const AeternaApp());
+  group('Aeterna — Auth Gate Tests', () {
+    testWidgets('WelcomeScreen displays AETERNA logo and Enter the Sanctum CTA',
+        (WidgetTester tester) async {
+      // Pump the WelcomeScreen in isolation — avoids platform channel
+      // dependencies (sqflite, AuthService) that AeternaApp triggers.
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: SanctumTheme.dark,
+          home: const WelcomeScreen(),
+        ),
+      );
 
-    // Verify that the AETERNA title is displayed
-    expect(find.text('AETERNA'), findsOneWidget);
+      // Allow entrance animations to begin
+      await tester.pump(const Duration(milliseconds: 100));
+
+      // Verify the AETERNA logo/title is rendered
+      expect(find.text('AETERNA'), findsOneWidget);
+
+      // Verify the "ENTER THE SANCTUM" call-to-action is present
+      expect(find.text('ENTER THE SANCTUM'), findsOneWidget);
+    });
+  });
+
+  group('Aeterna — Theme & Color Smoke Tests', () {
+    test('SanctumTheme provides valid dark and light themes', () {
+      final dark = SanctumTheme.dark;
+      final light = SanctumTheme.light;
+
+      expect(dark, isA<ThemeData>());
+      expect(light, isA<ThemeData>());
+      expect(dark.brightness, Brightness.dark);
+      expect(light.brightness, Brightness.light);
+    });
+
+    test('SanctumColors palette constants are defined', () {
+      expect(SanctumColors.abyss, isA<Color>());
+      expect(SanctumColors.irisCore, isA<Color>());
+      expect(SanctumColors.glassFill, isA<Color>());
+      expect(SanctumColors.glassBorder, isA<Color>());
+    });
   });
 }
