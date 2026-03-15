@@ -5,6 +5,7 @@ import 'package:project_aeterna/core/theme/sanctum_colors.dart';
 import 'package:project_aeterna/core/theme/sanctum_typography.dart';
 import 'package:project_aeterna/core/transitions/dissolve_transition.dart';
 import 'package:project_aeterna/features/billing/presentation/billing_settings_screen.dart';
+import 'package:project_aeterna/features/onboarding/data/auth_service.dart';
 
 /// Profile Screen — Sovereign Identity Management.
 ///
@@ -35,6 +36,7 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  final _authService = AuthService.instance;
   final _nameController = TextEditingController();
   final _legalIdController = TextEditingController();
   String _legalIdType = 'passport'; // passport | national_id
@@ -583,9 +585,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ),
           TextButton(
-            onPressed: () {
+            onPressed: () async {
               Navigator.pop(context); // Close dialog
-              widget.onLogout?.call();
+              await _authService.logout(); // Clear the local DB session
+              Navigator.of(context, rootNavigator: true)
+                  .pushNamedAndRemoveUntil('/welcome', (route) => false);
             },
             child: Text(
               isRtl ? 'تسجيل الخروج' : 'Logout',

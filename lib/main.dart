@@ -2,6 +2,7 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'package:project_aeterna/core/theme/sanctum_theme.dart';
 import 'package:project_aeterna/core/theme/sanctum_colors.dart';
@@ -48,7 +49,7 @@ class _AeternaAppState extends State<AeternaApp> {
   final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
 
   Locale _locale = const Locale('en', '');
-  ThemeMode _themeMode = ThemeMode.dark;
+  final ValueNotifier<ThemeMode> _themeNotifier = ValueNotifier(ThemeMode.dark);
   bool _isCheckingAuth = true;
   bool _isAuthenticated = false;
 
@@ -102,7 +103,7 @@ class _AeternaAppState extends State<AeternaApp> {
   }
 
   void _setThemeMode(ThemeMode mode) {
-    setState(() => _themeMode = mode);
+    _themeNotifier.value = mode;
     _saveThemePreference(mode);
   }
 
@@ -126,9 +127,7 @@ class _AeternaAppState extends State<AeternaApp> {
 
       if (result.isNotEmpty) {
         final saved = result.first['value'] as String;
-        setState(() {
-          _themeMode = saved == 'light' ? ThemeMode.light : ThemeMode.dark;
-        });
+        _themeNotifier.value = saved == 'light' ? ThemeMode.light : ThemeMode.dark;
         debugPrint('[Aeterna] Theme restored: $saved');
       }
     } catch (e) {
@@ -156,82 +155,93 @@ class _AeternaAppState extends State<AeternaApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      navigatorKey: _navigatorKey,
-      title: 'Project Aeterna',
-      debugShowCheckedModeBanner: false,
+    return ValueListenableBuilder<ThemeMode>(
+      valueListenable: _themeNotifier,
+      builder: (_, mode, __) {
+        return MaterialApp(
+          navigatorKey: _navigatorKey,
+          title: 'Project Aeterna',
+          debugShowCheckedModeBanner: false,
 
-      // Dual theme — Alabaster White / Digital Sanctum
-      theme: SanctumTheme.light,
-      darkTheme: SanctumTheme.dark,
-      themeMode: _themeMode,
+          // Dual theme — Alabaster White / Digital Sanctum
+          theme: SanctumTheme.light,
+          darkTheme: SanctumTheme.dark,
+          themeMode: mode,
 
-      // ─── Global RTL/LTR Localization ─────────────────────────────
-      locale: _locale,
-      supportedLocales: const [
-        Locale('en', ''),
-        Locale('ar', ''),
-      ],
-      localizationsDelegates: const [
-        DefaultMaterialLocalizations.delegate,
-        DefaultWidgetsLocalizations.delegate,
-      ],
+          // ─── Global RTL/LTR Localization ─────────────────────────────
+          locale: _locale,
+          supportedLocales: const [
+            Locale('en', ''),
+            Locale('ar', ''),
+          ],
+          localizationsDelegates: [
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
 
-      // Force directionality + Mobile-First responsive container
-      builder: (context, child) {
-        Widget content = Directionality(
-          textDirection:
-              _locale.languageCode == 'ar' ? TextDirection.rtl : TextDirection.ltr,
-          child: child ?? const SizedBox.shrink(),
-        );
+          // ─── Named Routes (for logout navigation) ─────────────────
+          routes: {
+            '/welcome': (context) => _buildWelcomeScreen(),
+          },
 
-        // ─── Mobile-First Constraint ─────────────────────────────
-        // On web/desktop: 450px centered, simulating mobile device
-        // On mobile: edge-to-edge
-        if (kIsWeb || _isDesktop()) {
-          final isDark = _themeMode == ThemeMode.dark;
-          content = Container(
-            color: isDark
-                ? const Color(0xFF050508) // Ultra-dark ambient
-                : const Color(0xFFE8E4DE), // Warm cream ambient
-            child: Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 450),
-                child: Container(
-                  decoration: BoxDecoration(
-                    boxShadow: [
-                      BoxShadow(
-                        color: (isDark
-                                ? SanctumColors.irisCore
-                                : SanctumColors.lightAccent)
-                            .withValues(alpha: 0.08),
-                        blurRadius: 40,
-                        spreadRadius: 4,
+          // Force directionality + Mobile-First responsive container
+          builder: (context, child) {
+            Widget content = Directionality(
+              textDirection:
+                  _locale.languageCode == 'ar' ? TextDirection.rtl : TextDirection.ltr,
+              child: child ?? const SizedBox.shrink(),
+            );
+
+            // ─── Mobile-First Constraint ─────────────────────────────
+            // On web/desktop: 450px centered, simulating mobile device
+            // On mobile: edge-to-edge
+            if (kIsWeb || _isDesktop()) {
+              final isDark = mode == ThemeMode.dark;
+              content = Container(
+                color: isDark
+                    ? const Color(0xFF050508) // Ultra-dark ambient
+                    : const Color(0xFFE8E4DE), // Warm cream ambient
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 450),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        boxShadow: [
+                          BoxShadow(
+                            color: (isDark
+                                    ? SanctumColors.irisCore
+                                    : SanctumColors.lightAccent)
+                                .withValues(alpha: 0.08),
+                            blurRadius: 40,
+                            spreadRadius: 4,
+                          ),
+                        ],
                       ),
-                    ],
+                      clipBehavior: Clip.antiAlias,
+                      child: content,
+                    ),
                   ),
-                  clipBehavior: Clip.antiAlias,
-                  child: content,
                 ),
-              ),
-            ),
-          );
-        }
+              );
+            }
 
-        return content;
+            return content;
+          },
+
+          home: _isCheckingAuth
+              ? _buildAuthCheckScreen()
+              : _isAuthenticated
+                  ? _buildSplashToDashboard()
+                  : _buildWelcomeScreen(),
+        );
       },
-
-      home: _isCheckingAuth
-          ? _buildAuthCheckScreen()
-          : _isAuthenticated
-              ? _buildSplashToDashboard()
-              : _buildWelcomeScreen(),
     );
   }
 
   /// Splash screen while checking auth session.
   Widget _buildAuthCheckScreen() {
-    final isDark = _themeMode == ThemeMode.dark;
+    final isDark = _themeNotifier.value == ThemeMode.dark;
     return Scaffold(
       backgroundColor: isDark ? SanctumColors.abyss : SanctumColors.lightBackground,
       body: Center(
@@ -317,20 +327,25 @@ class _AeternaAppState extends State<AeternaApp> {
     return SanctumDashboard(
       onLocaleChange: _setLocale,
       onThemeChange: _setThemeMode,
-      currentThemeMode: _themeMode,
+      currentThemeMode: _themeNotifier.value,
       countryCode: _userCountryCode,
       phoneNumber: _userPhone,
       onLogout: _handleLogout,
     );
   }
 
-  /// Logout: clear DB session, reset state, pop to Welcome.
+  /// Logout: clear DB session, reset state, navigate to Welcome.
   void _handleLogout() async {
     await AuthService.instance.logout();
     _userPhone = '';
     _userCountryCode = '';
     if (mounted) {
       setState(() => _isAuthenticated = false);
+      // Force-navigate to WelcomeScreen, removing all routes
+      _navigatorKey.currentState?.pushAndRemoveUntil(
+        DissolvePageRoute(page: _buildWelcomeScreen()),
+        (route) => false,
+      );
     }
   }
 
