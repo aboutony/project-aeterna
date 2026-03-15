@@ -183,6 +183,7 @@ class _AeternaAppState extends State<AeternaApp> {
           // ─── Named Routes (for logout navigation) ─────────────────
           routes: {
             '/welcome': (context) => _buildWelcomeScreen(),
+
           },
 
           // Force directionality + Mobile-First responsive container
@@ -260,6 +261,7 @@ class _AeternaAppState extends State<AeternaApp> {
   /// Flow: Welcome → OTP → Splash (2s) → BiometricScreen → Dashboard
   Widget _buildWelcomeScreen() {
     return WelcomeScreen(
+      themeNotifier: _themeNotifier,
       onEnter: () {
         final nav = _navigatorKey.currentState;
         if (nav == null) return;

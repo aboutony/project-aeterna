@@ -16,8 +16,9 @@ import 'package:project_aeterna/core/theme/sanctum_typography.dart';
 /// call-to-action with the golden iris motif and breathing animation.
 class WelcomeScreen extends StatefulWidget {
   final VoidCallback? onEnter;
+  final ValueNotifier<ThemeMode>? themeNotifier;
 
-  const WelcomeScreen({super.key, this.onEnter});
+  const WelcomeScreen({super.key, this.onEnter, this.themeNotifier});
 
   @override
   State<WelcomeScreen> createState() => _WelcomeScreenState();
@@ -88,6 +89,36 @@ class _WelcomeScreenState extends State<WelcomeScreen>
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                // ─── Theme Toggle ─────────────────────────────────
+                if (widget.themeNotifier != null)
+                  Align(
+                    alignment: AlignmentDirectional.topEnd,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 8),
+                      child: ValueListenableBuilder<ThemeMode>(
+                        valueListenable: widget.themeNotifier!,
+                        builder: (context, mode, _) {
+                          return IconButton(
+                            icon: Icon(
+                              mode == ThemeMode.dark
+                                  ? Icons.wb_sunny_rounded
+                                  : Icons.nightlight_round,
+                              color: mode == ThemeMode.dark
+                                  ? SanctumColors.irisCore
+                                  : SanctumColors.lightAccent,
+                              size: 24,
+                            ),
+                            onPressed: () {
+                              widget.themeNotifier!.value =
+                                  widget.themeNotifier!.value == ThemeMode.dark
+                                      ? ThemeMode.light
+                                      : ThemeMode.dark;
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                  ),
                 const Spacer(flex: 2),
 
                 // ─── Iris Emblem ─────────────────────────────────────
