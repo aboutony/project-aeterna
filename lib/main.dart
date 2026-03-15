@@ -104,7 +104,6 @@ class _AeternaAppState extends State<AeternaApp> {
 
   void _setThemeMode(ThemeMode mode) {
     _themeNotifier.value = mode;
-    _saveThemePreference(mode);
   }
 
   /// Load persisted theme preference from local DB.
