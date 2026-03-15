@@ -1,13 +1,14 @@
 {
-    "name": "project_aeterna",
-    "short_name": "project_aeterna",
-    "start_url": ".",
+    "name": "Project Aeterna — Sovereign Digital Vault",
+    "short_name": "Aeterna",
+    "start_url": "/",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#050508",
+    "theme_color": "#B4A0E5",
+    "description": "Military-grade encrypted digital vault for the GCC elite. Local-first, zero-knowledge architecture.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
+    "categories": ["finance", "security", "productivity"],
     "icons": [
         {
             "src": "icons/Icon-192.png",

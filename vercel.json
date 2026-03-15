@@ -1,0 +1,22 @@
+{
+  "version": 2,
+  "framework": null,
+  "installCommand": "bash scripts/install-flutter.sh",
+  "buildCommand": "./flutter/bin/flutter build web --release --base-href /",
+  "outputDirectory": "build/web",
+  "headers": [
+    {
+      "source": "/flutter_service_worker.js",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-cache" },
+        { "key": "Service-Worker-Allowed", "value": "/" }
+      ]
+    },
+    {
+      "source": "/manifest.json",
+      "headers": [
+        { "key": "Content-Type", "value": "application/manifest+json" }
+      ]
+    }
+  ]
+}
