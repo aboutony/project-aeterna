@@ -13,6 +13,7 @@ import 'package:project_aeterna/features/inheritance/data/oracle_service.dart';
 import 'package:project_aeterna/features/inheritance/presentation/claim_portal_screen.dart';
 import 'package:project_aeterna/features/inheritance/presentation/heir_registry_screen.dart';
 import 'package:project_aeterna/features/profile/presentation/profile_screen.dart';
+import 'package:project_aeterna/features/vault/presentation/asset_category_screen.dart';
 import 'package:project_aeterna/features/vault/presentation/financial_vault_screen.dart';
 import 'package:project_aeterna/features/vault/presentation/placeholder_vault_screen.dart';
 
@@ -525,9 +526,13 @@ class _SanctumDashboardState extends State<SanctumDashboard>
       case 'FINANCIAL':
         Navigator.of(context).push(
           DissolvePageRoute(
-            page: FinancialVaultScreen(
-              vaultIdentity: _vaultIdentity,
-              onPulseTap: _refreshHeartbeat,
+            page: AssetCategoryScreen(
+              title: 'FINANCIAL ASSETS',
+              titleAr: 'الأصول المالية',
+              subtitle: 'Sovereign Wealth',
+              subtitleAr: 'الثروة السيادية',
+              icon: Icons.account_balance_outlined,
+              accentColor: SanctumColors.assetFinancial,
             ),
           ),
         );
@@ -535,14 +540,13 @@ class _SanctumDashboardState extends State<SanctumDashboard>
       case 'SENTIMENTAL':
         Navigator.of(context).push(
           DissolvePageRoute(
-            page: PlaceholderVaultScreen(
+            page: AssetCategoryScreen(
               title: 'SENTIMENTAL LEGACY',
               titleAr: 'الإرث العاطفي',
               subtitle: 'Eternal Memories',
               subtitleAr: 'ذكريات خالدة',
               icon: Icons.favorite_outline,
               accentColor: SanctumColors.assetSentimental,
-              vaultIdentity: _vaultIdentity,
             ),
           ),
         );
@@ -550,14 +554,13 @@ class _SanctumDashboardState extends State<SanctumDashboard>
       case 'DISCRETE':
         Navigator.of(context).push(
           DissolvePageRoute(
-            page: PlaceholderVaultScreen(
+            page: AssetCategoryScreen(
               title: 'DISCRETE ASSETS',
               titleAr: 'الأصول السرية',
               subtitle: 'Classified Credentials',
               subtitleAr: 'بيانات سرية',
               icon: Icons.lock_outline,
               accentColor: SanctumColors.assetDiscrete,
-              vaultIdentity: _vaultIdentity,
             ),
           ),
         );

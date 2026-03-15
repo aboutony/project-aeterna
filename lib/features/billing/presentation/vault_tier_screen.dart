@@ -85,13 +85,16 @@ class VaultTierScreen extends StatelessWidget {
 
               const SizedBox(height: 28),
 
-              // ─── Sovereign Free Tier ───────────────────────────────
+              // ─── The Keeper Tier ────────────────────────────────────
               _buildTierCard(
                 context: context,
-                tier: 'free',
-                isActive: currentTier == 'free',
-                title: isRtl ? 'سيادة مجاني' : 'SOVEREIGN FREE',
-                price: isRtl ? 'مجاني' : 'FREE',
+                tier: 'keeper',
+                isActive: currentTier == 'keeper',
+                title: isRtl ? 'الحارس' : 'THE KEEPER',
+                price: '\$9.99/mo',
+                description: isRtl
+                    ? 'حماية رقمية أساسية'
+                    : 'Entry-level digital protection.',
                 icon: Icons.shield_outlined,
                 color: SanctumColors.statusActive,
                 features: [
@@ -99,8 +102,6 @@ class VaultTierScreen extends StatelessWidget {
                   _TierFeature(isRtl ? 'بيومتري قياسي' : 'Standard Biometrics', true),
                   _TierFeature(isRtl ? 'تشفير من طرف إلى طرف' : 'End-to-End Encryption', true),
                   _TierFeature(isRtl ? 'خزنة محلية أولاً' : 'Local-First Vault', true),
-                  _TierFeature(isRtl ? 'تجزئة متقدمة' : 'Advanced Sharding', false),
-                  _TierFeature(isRtl ? 'دعم ذو أولوية' : 'Priority Support', false),
                 ],
                 accentColor: accentColor,
                 textPrimary: textPrimary,
@@ -111,13 +112,45 @@ class VaultTierScreen extends StatelessWidget {
 
               const SizedBox(height: 16),
 
-              // ─── Masterpiece Pro Tier ──────────────────────────────
+              // ─── The Patriarch Tier ─────────────────────────────────
               _buildTierCard(
                 context: context,
-                tier: 'pro',
-                isActive: currentTier == 'pro',
-                title: isRtl ? 'تحفة برو' : 'MASTERPIECE PRO',
-                price: isRtl ? '49 USDT/شهر' : '49 USDT/mo',
+                tier: 'patriarch',
+                isActive: currentTier == 'patriarch',
+                title: isRtl ? 'البطريرك' : 'THE PATRIARCH',
+                price: '\$29.99/mo',
+                description: isRtl
+                    ? 'أمان جاهز للنقاب وإدارة العائلة'
+                    : 'Niqab-Ready security & family mgmt.',
+                icon: Icons.security,
+                color: const Color(0xFFC0C0C0),
+                features: [
+                  _TierFeature(isRtl ? '5GB تخزين R2' : '5GB R2 Storage', true),
+                  _TierFeature(isRtl ? 'بيومتري متقدم' : 'Advanced Biometrics', true),
+                  _TierFeature(isRtl ? 'تشفير من طرف إلى طرف' : 'End-to-End Encryption', true),
+                  _TierFeature(isRtl ? 'خزنة محلية أولاً' : 'Local-First Vault', true),
+                  _TierFeature(isRtl ? 'إدارة العائلة' : 'Family Management', true),
+                ],
+                accentColor: accentColor,
+                textPrimary: textPrimary,
+                textTertiary: textTertiary,
+                glassFill: glassFill,
+                glassBorder: glassBorder,
+                isRecommended: true,
+              ),
+
+              const SizedBox(height: 16),
+
+              // ─── The Sovereign Tier ─────────────────────────────────
+              _buildTierCard(
+                context: context,
+                tier: 'sovereign',
+                isActive: currentTier == 'sovereign',
+                title: isRtl ? 'السيادي' : 'THE SOVEREIGN',
+                price: '\$49.99/mo',
+                description: isRtl
+                    ? 'ضمان USDT كامل وسرية تامة'
+                    : 'Full USDT escrow & total discretion.',
                 icon: Icons.diamond_outlined,
                 color: goldColor,
                 features: [
@@ -126,6 +159,7 @@ class VaultTierScreen extends StatelessWidget {
                   _TierFeature(isRtl ? 'تشفير من طرف إلى طرف' : 'End-to-End Encryption', true),
                   _TierFeature(isRtl ? 'خزنة محلية أولاً' : 'Local-First Vault', true),
                   _TierFeature(isRtl ? 'تجزئة متقدمة (Sharding)' : 'Advanced Sharding', true),
+                  _TierFeature(isRtl ? 'ضمان USDT' : 'USDT Escrow', true),
                   _TierFeature(isRtl ? 'دعم ذو أولوية 24/7' : 'Priority Support 24/7', true),
                 ],
                 accentColor: accentColor,
@@ -133,7 +167,6 @@ class VaultTierScreen extends StatelessWidget {
                 textTertiary: textTertiary,
                 glassFill: glassFill,
                 glassBorder: glassBorder,
-                isRecommended: true,
               ),
 
               const SizedBox(height: 24),
@@ -161,6 +194,7 @@ class VaultTierScreen extends StatelessWidget {
     required bool isActive,
     required String title,
     required String price,
+    required String description,
     required IconData icon,
     required Color color,
     required List<_TierFeature> features,
@@ -246,6 +280,14 @@ class VaultTierScreen extends StatelessWidget {
                               fontWeight: FontWeight.w700,
                             ),
                           ),
+                          const SizedBox(height: 2),
+                          Text(
+                            description,
+                            style: SanctumTypography.bodySmall.copyWith(
+                              color: textTertiary,
+                              fontSize: 11,
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -323,9 +365,11 @@ class VaultTierScreen extends StatelessWidget {
                             ),
                           ),
                           child: Text(
-                            tier == 'pro'
-                                ? (isRtl ? 'ترقية إلى برو' : 'UPGRADE TO PRO')
-                                : (isRtl ? 'التبديل إلى المجاني' : 'SWITCH TO FREE'),
+                            tier == 'sovereign'
+                                ? (isRtl ? 'ترقية إلى السيادي' : 'UPGRADE TO SOVEREIGN')
+                                : tier == 'patriarch'
+                                    ? (isRtl ? 'ترقية إلى البطريرك' : 'UPGRADE TO PATRIARCH')
+                                    : (isRtl ? 'اختر الحارس' : 'SELECT KEEPER'),
                             style: SanctumTypography.buttonText.copyWith(
                               letterSpacing: 1.5,
                               color: Colors.black,
