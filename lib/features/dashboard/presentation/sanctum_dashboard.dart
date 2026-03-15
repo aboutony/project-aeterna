@@ -6,6 +6,7 @@ import 'package:project_aeterna/core/theme/sanctum_colors.dart';
 import 'package:project_aeterna/core/theme/sanctum_typography.dart';
 import 'package:project_aeterna/core/transitions/dissolve_transition.dart';
 import 'package:project_aeterna/features/dashboard/data/dashboard_data_service.dart';
+import 'package:project_aeterna/features/onboarding/data/auth_service.dart';
 import 'package:project_aeterna/features/dashboard/presentation/widgets/active_pulse_header.dart';
 import 'package:project_aeterna/features/dashboard/presentation/widgets/asset_card.dart';
 import 'package:project_aeterna/features/dashboard/presentation/widgets/sanctum_legal_modal.dart';
@@ -14,8 +15,7 @@ import 'package:project_aeterna/features/inheritance/presentation/claim_portal_s
 import 'package:project_aeterna/features/inheritance/presentation/heir_registry_screen.dart';
 import 'package:project_aeterna/features/profile/presentation/profile_screen.dart';
 import 'package:project_aeterna/features/vault/presentation/asset_category_screen.dart';
-import 'package:project_aeterna/features/vault/presentation/financial_vault_screen.dart';
-import 'package:project_aeterna/features/vault/presentation/placeholder_vault_screen.dart';
+
 
 /// The Sanctum Dashboard — the heart of Project Aeterna.
 ///
@@ -24,6 +24,7 @@ class SanctumDashboard extends StatefulWidget {
   final ValueChanged<Locale>? onLocaleChange;
   final ValueChanged<ThemeMode>? onThemeChange;
   final ThemeMode currentThemeMode;
+  final ValueNotifier<ThemeMode>? themeNotifier;
   final VoidCallback? onProfileTap;
   final VoidCallback? onLogout;
   final String countryCode;
@@ -34,6 +35,7 @@ class SanctumDashboard extends StatefulWidget {
     this.onLocaleChange,
     this.onThemeChange,
     this.currentThemeMode = ThemeMode.dark,
+    this.themeNotifier,
     this.onProfileTap,
     this.onLogout,
     this.countryCode = '',
@@ -413,11 +415,13 @@ class _SanctumDashboardState extends State<SanctumDashboard>
   Widget _buildProfileButton() {
     return GestureDetector(
       onTap: () {
+        final profile = AuthService.instance.userProfile;
         Navigator.of(context).push(
           DissolvePageRoute(
             page: ProfileScreen(
               countryCode: widget.countryCode,
               phoneNumber: widget.phoneNumber,
+              initialName: profile['user_full_name'],
               onLogout: () {
                 if (mounted) {
                   widget.onLogout?.call();
@@ -445,7 +449,7 @@ class _SanctumDashboardState extends State<SanctumDashboard>
 
   // ─── Theme Toggle (Sun/Moon) ──────────────────────────────────────
   Widget _buildThemeToggle() {
-    final isDark = widget.currentThemeMode == ThemeMode.dark;
+    final isDark = (widget.themeNotifier?.value ?? widget.currentThemeMode) == ThemeMode.dark;
     return GestureDetector(
       onTap: () {
         widget.onThemeChange?.call(isDark ? ThemeMode.light : ThemeMode.dark);
@@ -533,6 +537,7 @@ class _SanctumDashboardState extends State<SanctumDashboard>
               subtitleAr: 'الثروة السيادية',
               icon: Icons.account_balance_outlined,
               accentColor: SanctumColors.assetFinancial,
+              categoryId: 'FINANCIAL',
             ),
           ),
         );
@@ -547,6 +552,7 @@ class _SanctumDashboardState extends State<SanctumDashboard>
               subtitleAr: 'ذكريات خالدة',
               icon: Icons.favorite_outline,
               accentColor: SanctumColors.assetSentimental,
+              categoryId: 'SENTIMENTAL',
             ),
           ),
         );
@@ -561,6 +567,7 @@ class _SanctumDashboardState extends State<SanctumDashboard>
               subtitleAr: 'بيانات سرية',
               icon: Icons.lock_outline,
               accentColor: SanctumColors.assetDiscrete,
+              categoryId: 'DISCRETE',
             ),
           ),
         );

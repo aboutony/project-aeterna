@@ -131,6 +131,20 @@ class DashboardDataService {
     };
   }
 
+  /// Get assets for a specific category.
+  /// Returns vault_assets rows for FINANCIAL/DISCRETE,
+  /// or vault_media rows for SENTIMENTAL.
+  Future<List<Map<String, dynamic>>> getAssetsByCategory(String category) async {
+    final db = await _client.getDatabase();
+    if (category == 'SENTIMENTAL') {
+      return db.rawQuery('SELECT * FROM vault_media ORDER BY created_at DESC');
+    }
+    return db.rawQuery(
+      'SELECT * FROM vault_assets WHERE category = ? ORDER BY updated_at DESC',
+      [category],
+    );
+  }
+
   // ─── Private: Demo Data Seeding ──────────────────────────────────────
 
   Future<void> _seedDemoData(dynamic db) async {

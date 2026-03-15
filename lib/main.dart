@@ -61,7 +61,6 @@ class _AeternaAppState extends State<AeternaApp> {
   void initState() {
     super.initState();
     _detectLocale();
-    _loadThemePreference();
     _checkAuth();
   }
 
@@ -106,51 +105,7 @@ class _AeternaAppState extends State<AeternaApp> {
     _themeNotifier.value = mode;
   }
 
-  /// Load persisted theme preference from local DB.
-  Future<void> _loadThemePreference() async {
-    try {
-      final db = await TursoClient.instance.getDatabase();
 
-      // Ensure app_settings table exists
-      await db.execute('''
-        CREATE TABLE IF NOT EXISTS app_settings (
-          key TEXT PRIMARY KEY,
-          value TEXT NOT NULL,
-          updated_at TEXT NOT NULL
-        )
-      ''');
-
-      final result = await db.rawQuery(
-        "SELECT value FROM app_settings WHERE key = 'theme_mode'",
-      );
-
-      if (result.isNotEmpty) {
-        final saved = result.first['value'] as String;
-        _themeNotifier.value = saved == 'light' ? ThemeMode.light : ThemeMode.dark;
-        debugPrint('[Aeterna] Theme restored: $saved');
-      }
-    } catch (e) {
-      debugPrint('[Aeterna] Theme load fallback to dark: $e');
-    }
-  }
-
-  /// Persist theme preference to local DB.
-  Future<void> _saveThemePreference(ThemeMode mode) async {
-    try {
-      final db = await TursoClient.instance.getDatabase();
-      final value = mode == ThemeMode.light ? 'light' : 'dark';
-      final now = DateTime.now().toIso8601String();
-
-      await db.rawInsert(
-        "INSERT OR REPLACE INTO app_settings (key, value, updated_at) "
-        "VALUES ('theme_mode', ?, ?)",
-        [value, now],
-      );
-      debugPrint('[Aeterna] Theme persisted: $value');
-    } catch (e) {
-      debugPrint('[Aeterna] Theme save error: $e');
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -329,6 +284,7 @@ class _AeternaAppState extends State<AeternaApp> {
       onLocaleChange: _setLocale,
       onThemeChange: _setThemeMode,
       currentThemeMode: _themeNotifier.value,
+      themeNotifier: _themeNotifier,
       countryCode: _userCountryCode,
       phoneNumber: _userPhone,
       onLogout: _handleLogout,

@@ -23,12 +23,14 @@ class ProfileScreen extends StatefulWidget {
   final VoidCallback? onLogout;
   final String countryCode;
   final String phoneNumber;
+  final String? initialName;
 
   const ProfileScreen({
     super.key,
     this.onLogout,
     this.countryCode = '',
     this.phoneNumber = '',
+    this.initialName,
   });
 
   @override
@@ -53,6 +55,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
     // Pre-populate from constructor params
     _localProfile['user_phone'] = widget.phoneNumber;
     _localProfile['user_country_code'] = widget.countryCode;
+    // Pre-populate name if provided by AuthService
+    if (widget.initialName != null && widget.initialName!.isNotEmpty) {
+      _nameController.text = widget.initialName!;
+      _localProfile['user_full_name'] = widget.initialName!;
+    }
   }
 
   @override
