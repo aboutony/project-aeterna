@@ -77,9 +77,53 @@ class SanctumColors {
   /// Glass elevated border
   static const Color glassBorderElevated = Color(0x33FFFFFF);
 
-  // ─── Light Mode Overrides ───────────────────────────────────────────
-  static const Color lightBackground = Color(0xFFF6F8FA);
+  // ─── Dashboard — Asset Category Colors ──────────────────────────────
+  /// Financial assets — Emerald Teal (wealth, stability)
+  static const Color assetFinancial = Color(0xFF00D4AA);
+
+  /// Sentimental Legacy — Rose Quartz (warm, intimate, nostalgic)
+  static const Color assetSentimental = Color(0xFFFF6B9D);
+
+  /// Sentimental secondary — warm amber glow
+  static const Color assetSentimentalWarm = Color(0xFFFFAB76);
+
+  /// Discrete assets — Royal Violet (confidential, exclusive)
+  static const Color assetDiscrete = Color(0xFF7C4DFF);
+
+  /// Pulse ring — resting heartbeat green
+  static const Color pulseResting = Color(0xFF4ADE80);
+
+  // ─── Light Mode — "Alabaster White" ──────────────────────────────────
+  /// Alabaster canvas — warm off-white
+  static const Color lightBackground = Color(0xFFF8F6F2);
+
+  /// Pure surface — cards and elevated glass
   static const Color lightSurface = Color(0xFFFFFFFF);
-  static const Color lightTextPrimary = Color(0xFF1F2328);
-  static const Color lightTextSecondary = Color(0xFF656D76);
+
+  /// Cream elevated surface — subtle warmth
+  static const Color lightSurfaceElevated = Color(0xFFFAF8F5);
+
+  /// Primary text — rich charcoal
+  static const Color lightTextPrimary = Color(0xFF1A1A2E);
+
+  /// Secondary text — warm slate
+  static const Color lightTextSecondary = Color(0xFF5A5A72);
+
+  /// Tertiary text — muted lavender
+  static const Color lightTextTertiary = Color(0xFF9A9AB0);
+
+  /// Glassmorphism fill on light — subtle frost
+  static const Color lightGlassFill = Color(0x0D000000);
+
+  /// Glass border on light
+  static const Color lightGlassBorder = Color(0x14000000);
+
+  /// Glass elevated border on light
+  static const Color lightGlassBorderElevated = Color(0x1F000000);
+
+  /// Light accent — warm gold (not as bright as dark mode)
+  static const Color lightAccent = Color(0xFFD4A017);
+
+  /// Light status active — deeper emerald for contrast
+  static const Color lightStatusActive = Color(0xFF2E9B4F);
 }

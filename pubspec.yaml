@@ -20,6 +20,10 @@ dependencies:
 
   # Utilities
   uuid: ^4.5.1
+  sqflite_common_ffi_web: ^1.1.1
+
+  # QR Code — USDT Deposit Address
+  qr_flutter: ^4.1.0
 
 dev_dependencies:
   flutter_test:

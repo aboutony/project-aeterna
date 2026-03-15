@@ -1,23 +1,42 @@
+import 'dart:ui' as ui;
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'package:project_aeterna/core/theme/sanctum_theme.dart';
 import 'package:project_aeterna/core/theme/sanctum_colors.dart';
 import 'package:project_aeterna/core/theme/sanctum_typography.dart';
+import 'package:project_aeterna/core/transitions/dissolve_transition.dart';
+import 'package:project_aeterna/features/biometric/presentation/biometric_screen.dart';
 import 'package:project_aeterna/features/splash/presentation/splash_screen.dart';
+import 'package:project_aeterna/features/dashboard/presentation/sanctum_dashboard.dart';
+import 'package:project_aeterna/features/onboarding/presentation/welcome_screen.dart';
+import 'package:project_aeterna/features/onboarding/presentation/otp_screen.dart';
+import 'package:project_aeterna/features/onboarding/data/auth_service.dart';
+import 'package:project_aeterna/features/vault/data/database/turso_client.dart';
 import 'package:project_aeterna/security/key_derivation.dart';
+
+// Web database factory
+import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
+import 'package:sqflite/sqflite.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize sqflite for web platform
+  if (kIsWeb) {
+    databaseFactory = databaseFactoryFfiWeb;
+    debugPrint('[Aeterna] Web database factory initialized (sqflite_ffi_web)');
+  }
+
   runApp(const AeternaApp());
 }
 
 /// Project Aeterna — The Sovereign Digital Vault
 ///
-/// A high-fidelity, local-first digital vault for the GCC and
-/// international elite. Built with Native Flutter excellence.
-///
-/// Core Standard #2: "Native Bi-Directional (RTL/LTR) Support:
-/// Integration of Arabic and English from the root level."
+/// Mobile-First, Edge-Native, Zero-Knowledge architecture.
+/// On web/desktop: constrained to 450px centered frame.
+/// On mobile: edge-to-edge fullscreen.
 class AeternaApp extends StatefulWidget {
   const AeternaApp({super.key});
 
@@ -26,22 +45,126 @@ class AeternaApp extends StatefulWidget {
 }
 
 class _AeternaAppState extends State<AeternaApp> {
+  final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
+
   Locale _locale = const Locale('en', '');
+  ThemeMode _themeMode = ThemeMode.dark;
+  bool _isCheckingAuth = true;
+  bool _isAuthenticated = false;
+
+  // Auth data — populated on session check or OTP verify
+  String _userPhone = '';
+  String _userCountryCode = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _detectLocale();
+    _loadThemePreference();
+    _checkAuth();
+  }
+
+  /// Auto-detect browser/device locale for bilingual support.
+  void _detectLocale() {
+    try {
+      final platformLocales = ui.PlatformDispatcher.instance.locales;
+      for (final locale in platformLocales) {
+        if (locale.languageCode == 'ar') {
+          _locale = const Locale('ar', '');
+          debugPrint('[Aeterna] Auto-detected Arabic locale — RTL mode');
+          return;
+        }
+      }
+      debugPrint('[Aeterna] Locale: English (default)');
+    } catch (_) {
+      debugPrint('[Aeterna] Locale detection fallback: English');
+    }
+  }
+
+  /// Check if user has an active session.
+  Future<void> _checkAuth() async {
+    final hasSession = await AuthService.instance.checkSession();
+    if (mounted) {
+      if (hasSession) {
+        final profile = AuthService.instance.userProfile;
+        _userPhone = profile['user_phone'] ?? '';
+        _userCountryCode = profile['user_country_code'] ?? '';
+      }
+      setState(() {
+        _isAuthenticated = hasSession;
+        _isCheckingAuth = false;
+      });
+    }
+  }
 
   void _setLocale(Locale locale) {
     setState(() => _locale = locale);
   }
 
+  void _setThemeMode(ThemeMode mode) {
+    setState(() => _themeMode = mode);
+    _saveThemePreference(mode);
+  }
+
+  /// Load persisted theme preference from local DB.
+  Future<void> _loadThemePreference() async {
+    try {
+      final db = await TursoClient.instance.getDatabase();
+
+      // Ensure app_settings table exists
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS app_settings (
+          key TEXT PRIMARY KEY,
+          value TEXT NOT NULL,
+          updated_at TEXT NOT NULL
+        )
+      ''');
+
+      final result = await db.rawQuery(
+        "SELECT value FROM app_settings WHERE key = 'theme_mode'",
+      );
+
+      if (result.isNotEmpty) {
+        final saved = result.first['value'] as String;
+        setState(() {
+          _themeMode = saved == 'light' ? ThemeMode.light : ThemeMode.dark;
+        });
+        debugPrint('[Aeterna] Theme restored: $saved');
+      }
+    } catch (e) {
+      debugPrint('[Aeterna] Theme load fallback to dark: $e');
+    }
+  }
+
+  /// Persist theme preference to local DB.
+  Future<void> _saveThemePreference(ThemeMode mode) async {
+    try {
+      final db = await TursoClient.instance.getDatabase();
+      final value = mode == ThemeMode.light ? 'light' : 'dark';
+      final now = DateTime.now().toIso8601String();
+
+      await db.rawInsert(
+        "INSERT OR REPLACE INTO app_settings (key, value, updated_at) "
+        "VALUES ('theme_mode', ?, ?)",
+        [value, now],
+      );
+      debugPrint('[Aeterna] Theme persisted: $value');
+    } catch (e) {
+      debugPrint('[Aeterna] Theme save error: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: _navigatorKey,
       title: 'Project Aeterna',
       debugShowCheckedModeBanner: false,
 
-      // Digital Sanctum theme — dark mode primary
+      // Dual theme — Alabaster White / Digital Sanctum
       theme: SanctumTheme.light,
       darkTheme: SanctumTheme.dark,
-      themeMode: ThemeMode.dark,
+      themeMode: _themeMode,
 
       // ─── Global RTL/LTR Localization ─────────────────────────────
       locale: _locale,
@@ -50,42 +173,171 @@ class _AeternaAppState extends State<AeternaApp> {
         Locale('ar', ''),
       ],
       localizationsDelegates: const [
-        // Material/Cupertino delegates handle text direction automatically
         DefaultMaterialLocalizations.delegate,
         DefaultWidgetsLocalizations.delegate,
       ],
 
-      // Force directionality from locale
+      // Force directionality + Mobile-First responsive container
       builder: (context, child) {
-        return Directionality(
+        Widget content = Directionality(
           textDirection:
               _locale.languageCode == 'ar' ? TextDirection.rtl : TextDirection.ltr,
           child: child ?? const SizedBox.shrink(),
         );
+
+        // ─── Mobile-First Constraint ─────────────────────────────
+        // On web/desktop: 450px centered, simulating mobile device
+        // On mobile: edge-to-edge
+        if (kIsWeb || _isDesktop()) {
+          final isDark = _themeMode == ThemeMode.dark;
+          content = Container(
+            color: isDark
+                ? const Color(0xFF050508) // Ultra-dark ambient
+                : const Color(0xFFE8E4DE), // Warm cream ambient
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 450),
+                child: Container(
+                  decoration: BoxDecoration(
+                    boxShadow: [
+                      BoxShadow(
+                        color: (isDark
+                                ? SanctumColors.irisCore
+                                : SanctumColors.lightAccent)
+                            .withValues(alpha: 0.08),
+                        blurRadius: 40,
+                        spreadRadius: 4,
+                      ),
+                    ],
+                  ),
+                  clipBehavior: Clip.antiAlias,
+                  child: content,
+                ),
+              ),
+            ),
+          );
+        }
+
+        return content;
       },
 
-      home: Builder(
-        builder: (context) => SplashScreen(
-          onComplete: () {
-            debugPrint('[Aeterna] Gateway complete — transitioning to demo home');
-            Navigator.of(context).pushReplacement(
-              PageRouteBuilder(
-                pageBuilder: (_, __, ___) =>
-                    DemoHomeScreen(onLocaleChange: _setLocale),
-                transitionsBuilder: (_, animation, __, child) {
-                  return FadeTransition(opacity: animation, child: child);
-                },
-                transitionDuration: const Duration(milliseconds: 800),
-              ),
-            );
-          },
+      home: _isCheckingAuth
+          ? _buildAuthCheckScreen()
+          : _isAuthenticated
+              ? _buildSplashToDashboard()
+              : _buildWelcomeScreen(),
+    );
+  }
+
+  /// Splash screen while checking auth session.
+  Widget _buildAuthCheckScreen() {
+    final isDark = _themeMode == ThemeMode.dark;
+    return Scaffold(
+      backgroundColor: isDark ? SanctumColors.abyss : SanctumColors.lightBackground,
+      body: Center(
+        child: SizedBox(
+          width: 32, height: 32,
+          child: CircularProgressIndicator(
+            strokeWidth: 2,
+            color: isDark ? SanctumColors.irisCore : SanctumColors.lightAccent,
+          ),
         ),
       ),
+    );
+  }
 
-      routes: {
-        '/demo': (context) => DemoHomeScreen(onLocaleChange: _setLocale),
+  /// Welcome screen — unauthenticated entry.
+  /// Flow: Welcome → OTP → Splash (2s) → BiometricScreen → Dashboard
+  Widget _buildWelcomeScreen() {
+    return WelcomeScreen(
+      onEnter: () {
+        final nav = _navigatorKey.currentState;
+        if (nav == null) return;
+        nav.push(
+          DissolvePageRoute(
+            page: OtpScreen(
+              onVerified: () {
+                setState(() => _isAuthenticated = true);
+                nav.pushAndRemoveUntil(
+                  DissolvePageRoute(
+                    page: SplashScreen(
+                      onComplete: () {
+                        debugPrint('[Aeterna] OTP → Splash → Biometric');
+                        nav.pushReplacement(
+                          DissolvePageRoute(
+                            page: BiometricScreen(
+                              onComplete: () {
+                                debugPrint('[Aeterna] Biometric → Dashboard');
+                                nav.pushReplacement(
+                                  DissolvePageRoute(
+                                    page: _dashboardWidget(),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  (route) => false,
+                );
+              },
+            ),
+          ),
+        );
       },
     );
+  }
+
+  /// Returning user flow: Splash (2s) → BiometricScreen → Dashboard
+  Widget _buildSplashToDashboard() {
+    return SplashScreen(
+      onComplete: () {
+        debugPrint('[Aeterna] Authenticated → Biometric gate');
+        final nav = _navigatorKey.currentState;
+        if (nav == null) return;
+        nav.pushReplacement(
+          DissolvePageRoute(
+            page: BiometricScreen(
+              onComplete: () {
+                debugPrint('[Aeterna] Biometric → Dashboard');
+                nav.pushReplacement(
+                  DissolvePageRoute(page: _dashboardWidget()),
+                );
+              },
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _dashboardWidget() {
+    return SanctumDashboard(
+      onLocaleChange: _setLocale,
+      onThemeChange: _setThemeMode,
+      currentThemeMode: _themeMode,
+      countryCode: _userCountryCode,
+      phoneNumber: _userPhone,
+      onLogout: _handleLogout,
+    );
+  }
+
+  /// Logout: clear DB session, reset state, pop to Welcome.
+  void _handleLogout() async {
+    await AuthService.instance.logout();
+    _userPhone = '';
+    _userCountryCode = '';
+    if (mounted) {
+      setState(() => _isAuthenticated = false);
+    }
+  }
+
+  bool _isDesktop() {
+    return defaultTargetPlatform == TargetPlatform.windows ||
+        defaultTargetPlatform == TargetPlatform.macOS ||
+        defaultTargetPlatform == TargetPlatform.linux;
   }
 }
 

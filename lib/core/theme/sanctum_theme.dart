@@ -122,20 +122,26 @@ class SanctumTheme {
         ),
       );
 
-  // ─── Light Theme (Secondary — "The Surface") ───────────────────────
+  // ─── Light Theme (Secondary — "Alabaster White") ─────────────────────
   static ThemeData get light => ThemeData(
         useMaterial3: true,
         brightness: Brightness.light,
         fontFamily: SanctumTypography.bodyFont,
+
+        // Core colors — Alabaster White
         scaffoldBackgroundColor: SanctumColors.lightBackground,
         colorScheme: const ColorScheme.light(
           surface: SanctumColors.lightSurface,
-          primary: SanctumColors.irisShadow,
+          primary: SanctumColors.lightAccent,
           secondary: SanctumColors.irisAmber,
+          tertiary: SanctumColors.irisShadow,
           error: SanctumColors.statusCritical,
           onPrimary: SanctumColors.lightSurface,
           onSurface: SanctumColors.lightTextPrimary,
+          onSecondary: SanctumColors.lightSurface,
         ),
+
+        // App bar — transparent with dark overlay
         appBarTheme: AppBarTheme(
           backgroundColor: Colors.transparent,
           elevation: 0,
@@ -143,7 +149,88 @@ class SanctumTheme {
           titleTextStyle: SanctumTypography.displaySmall.copyWith(
             color: SanctumColors.lightTextPrimary,
           ),
+          iconTheme: const IconThemeData(
+            color: SanctumColors.lightTextPrimary,
+          ),
         ),
+
+        // Cards — Light Glassmorphism
+        cardTheme: CardThemeData(
+          color: SanctumColors.lightGlassFill,
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+            side: const BorderSide(
+              color: SanctumColors.lightGlassBorder,
+              width: 1,
+            ),
+          ),
+        ),
+
+        // Elevated buttons — Warm Gold
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: SanctumColors.lightAccent,
+            foregroundColor: SanctumColors.lightSurface,
+            elevation: 0,
+            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            textStyle: SanctumTypography.buttonText,
+          ),
+        ),
+
+        // Text button
+        textButtonTheme: TextButtonThemeData(
+          style: TextButton.styleFrom(
+            foregroundColor: SanctumColors.lightAccent,
+            textStyle: SanctumTypography.buttonText.copyWith(
+              color: SanctumColors.lightAccent,
+            ),
+          ),
+        ),
+
+        // Input decoration — Frost glass
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true,
+          fillColor: SanctumColors.lightGlassFill,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: SanctumColors.lightGlassBorder),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: SanctumColors.lightGlassBorder),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(
+              color: SanctumColors.lightAccent,
+              width: 1.5,
+            ),
+          ),
+          labelStyle: SanctumTypography.bodyMedium.copyWith(
+            color: SanctumColors.lightTextSecondary,
+          ),
+          hintStyle: SanctumTypography.bodyMedium.copyWith(
+            color: SanctumColors.lightTextTertiary,
+          ),
+        ),
+
+        // Divider
+        dividerTheme: const DividerThemeData(
+          color: SanctumColors.lightGlassBorder,
+          thickness: 1,
+        ),
+
+        // Icon theme
+        iconTheme: const IconThemeData(
+          color: SanctumColors.lightTextSecondary,
+          size: 24,
+        ),
+
+        // Page transitions
         pageTransitionsTheme: const PageTransitionsTheme(
           builders: {
             TargetPlatform.android: CupertinoPageTransitionsBuilder(),
