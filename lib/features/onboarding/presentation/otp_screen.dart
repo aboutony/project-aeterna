@@ -426,6 +426,7 @@ class _OtpScreenState extends State<OtpScreen>
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.normal,
+                  height: 1.0,
                   color: Colors.white,
                 ),
                 decoration: const InputDecoration(

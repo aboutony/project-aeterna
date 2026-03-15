@@ -15,6 +15,7 @@ import 'package:project_aeterna/features/onboarding/presentation/welcome_screen.
 import 'package:project_aeterna/features/onboarding/presentation/otp_screen.dart';
 import 'package:project_aeterna/features/onboarding/data/auth_service.dart';
 import 'package:project_aeterna/features/vault/data/database/turso_client.dart';
+import 'package:project_aeterna/features/vault/presentation/asset_detail_screen.dart';
 import 'package:project_aeterna/security/key_derivation.dart';
 
 // Web database factory
@@ -136,8 +137,8 @@ class _AeternaAppState extends State<AeternaApp> {
 
           // ─── Named Routes (for logout navigation) ─────────────────
           routes: {
+            '/asset-details': (context) => const AssetDetailScreen(),
             '/welcome': (context) => _buildWelcomeScreen(),
-
           },
 
           // Force directionality + Mobile-First responsive container
