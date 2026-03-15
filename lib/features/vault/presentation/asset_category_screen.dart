@@ -143,14 +143,18 @@ class _AssetCategoryScreenState extends State<AssetCategoryScreen> {
                     itemCount: assets.length,
                     separatorBuilder: (_, __) => const SizedBox(height: 10),
                     itemBuilder: (context, index) {
-                      return _buildAssetTile(
-                        asset: assets[index],
-                        isDark: isDark,
-                        isRtl: isRtl,
-                        glassFill: glassFill,
-                        glassBorder: glassBorder,
-                        textPrimary: textPrimary,
-                        textTertiary: textTertiary,
+                      final asset = assets[index];
+                      return GestureDetector(
+                        onTap: () => Navigator.pushNamed(context, '/asset-details', arguments: asset),
+                        child: _buildAssetTile(
+                          asset: asset,
+                          isDark: isDark,
+                          isRtl: isRtl,
+                          glassFill: glassFill,
+                          glassBorder: glassBorder,
+                          textPrimary: textPrimary,
+                          textTertiary: textTertiary,
+                        ),
                       );
                     },
                   );

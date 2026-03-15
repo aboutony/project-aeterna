@@ -154,13 +154,9 @@ class VaultTierScreen extends StatelessWidget {
                 icon: Icons.diamond_outlined,
                 color: goldColor,
                 features: [
-                  _TierFeature(isRtl ? '10GB تخزين R2' : '10GB R2 Storage', true),
-                  _TierFeature(isRtl ? 'بيومتري متقدم' : 'Advanced Biometrics', true),
-                  _TierFeature(isRtl ? 'تشفير من طرف إلى طرف' : 'End-to-End Encryption', true),
-                  _TierFeature(isRtl ? 'خزنة محلية أولاً' : 'Local-First Vault', true),
-                  _TierFeature(isRtl ? 'تجزئة متقدمة (Sharding)' : 'Advanced Sharding', true),
-                  _TierFeature(isRtl ? 'ضمان USDT' : 'USDT Escrow', true),
-                  _TierFeature(isRtl ? 'دعم ذو أولوية 24/7' : 'Priority Support 24/7', true),
+                  _TierFeature(isRtl ? '20GB تخزين R2' : '20GB R2 Storage', true),
+                  _TierFeature(isRtl ? 'توقيع بيومتري متعدد' : 'Biometric Multi-Sig', true),
+                  _TierFeature(isRtl ? 'بروتوكول المنفذ الإرثي' : 'Legacy Executor Protocol', true),
                 ],
                 accentColor: accentColor,
                 textPrimary: textPrimary,
@@ -366,7 +362,7 @@ class VaultTierScreen extends StatelessWidget {
                           ),
                           child: Text(
                             tier == 'sovereign'
-                                ? (isRtl ? 'ترقية إلى السيادي' : 'UPGRADE TO SOVEREIGN')
+                                ? (isRtl ? 'اختيار السيادي' : 'SELECT SOVEREIGN')
                                 : tier == 'patriarch'
                                     ? (isRtl ? 'ترقية إلى البطريرك' : 'UPGRADE TO PATRIARCH')
                                     : (isRtl ? 'اختر الحارس' : 'SELECT KEEPER'),
